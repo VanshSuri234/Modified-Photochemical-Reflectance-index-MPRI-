@@ -1,0 +1,30 @@
+#( 1.Importing Libraries)
+import cv2
+import numpy as np
+import requests
+from PIL import Image
+from io import BytesIO
+import matplotlib.pyplot as plt
+#(2.Define URL and Fetch Image:)
+url = 'http://192.168.137.1/saved-photo'
+response = requests.get(url)
+#(3.Image Processing:)
+if response.status_code == 200:
+image = Image.open(BytesIO(response.content))
+image.show()
+image_np = np.array(image)
+b, g, r = cv2.split(image_np)
+mpri_value = (gr) / (g+r)
+#(4.Thresholding and Plotting:)
+threshold = 0.8
+
+th, thresh = cv2.threshold (mpri_value, threshold, 255, cv2.THRESH_BINARY) plt.imshow(mpri_value)
+
+plt.title('MPRI')
+
+plt.show()
+#(5.Calculating Vegetation Percentage:)
+num_vegetation_pixels = np.count_nonzero(thresh == 0)
+total_pixels = thresh.shape[0] * thresh.shape[1]
+pv = (num_vegetation_pixels / total_pixels) * 100
+print(pv)
